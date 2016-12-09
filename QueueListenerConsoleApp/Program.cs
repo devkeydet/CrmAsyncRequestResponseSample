@@ -54,6 +54,7 @@ namespace QueueListenerConsoleApp
         private static async void ProcessMessageAsync(BrokeredMessage message)
         {
             var primaryEntityId = await new StreamReader(message.GetBody<Stream>(), Encoding.UTF8).ReadToEndAsync();
+            Console.WriteLine($"Begin processing: {primaryEntityId}");
 
             // Pretend more data was passed in the message and there is more processing needed here
             // or perhaps we need to call a web service, etc.
@@ -85,10 +86,11 @@ namespace QueueListenerConsoleApp
             if (response.StatusCode == HttpStatusCode.NoContent || response.StatusCode == HttpStatusCode.NotFound)
             {
                 await message.CompleteAsync();
+                Console.WriteLine($"Successfully processed: {primaryEntityId}");
             }
             else
             {
-                Console.WriteLine("Something went wrong updating CRM");
+                Console.WriteLine($"Something went wrong processing: {primaryEntityId}");
                 Console.WriteLine($"StatusCode: {response.StatusCode}");
                 Console.WriteLine("Content:");
                 Console.WriteLine(response.Content);
